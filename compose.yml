@@ -1,6 +1,6 @@
 services:
   router:
-    image: router
+    image: ubuntu:latest
     privileged: true
     container_name: router
     hostname: router
@@ -30,7 +30,7 @@ services:
       "
 
   external_host:
-    image: kali
+    image: kalilinux/kali-rolling
     container_name: kali
     hostname: kali_attacker
     tty: true
@@ -74,7 +74,7 @@ services:
 
 
   internal_host:
-    image: internal_host
+    image: ubuntu:latest
     container_name: internal_host
     hostname: internal_host
     tty: true
@@ -91,14 +91,14 @@ services:
     - ./tmp/logs:/logs:rw
     - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
   # Do NOT mount a profile volume here if you want a brand-new profile each run
-#    command: >
-#      bash -c "
-#        apt update &&
-#        apt install -y iproute2 iputils-ping net-tools curl &&
-#        ip route add 10.100.10.0/24 via 192.168.70.27 &&
-#        echo 'Internal host configured' &&
-#        tail -f /dev/null
-#      "
+    command: >
+      bash -c "
+        apt update &&
+        apt install -y iproute2 iputils-ping net-tools curl &&
+        ip route add 10.100.10.0/24 via 192.168.70.27 &&
+        echo 'Internal host configured' &&
+        tail -f /dev/null
+      "
 
 networks:
   external_net:
