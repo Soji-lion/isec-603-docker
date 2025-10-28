@@ -51,7 +51,7 @@ services:
     command: >
       bash -c "
         apt update &&
-        apt install -y iproute2 iputils-ping net-tools curl dnsutils traceroute wget &&
+        apt install -y iproute2 iputils-ping net-tools curl dnsutils traceroute wget slowloris nmap sqlmap &&
         ip route add 192.168.70.0/24 via 10.100.10.27 &&
         echo 'External host configured' &&
         apt update && apt install -y firefox-esr &&
