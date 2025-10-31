@@ -19,12 +19,15 @@ services:
         apt update &&
         apt install -y iptables iproute2 iputils-ping net-tools dnsutils traceroute curl wget snort &&
        echo 1 > /proc/sys/net/ipv4/ip_forward &&
-        iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE &&
-        iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT &&
-        iptables -A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT &&
-        iptables -A FORWARD -i eth0 -o eth1 -d 192.168.70.4 -j ACCEPT &&
+        iptables -I FORWARD -j NFQUEUE --queue-num 0 &&
         echo '=== Configuring Snort 2.9 ===' &&
         mkdir -p /var/log/snort &&
+        sed -i '/ipvar HOME_NET/c\ipvar HOME_NET 192.168.70.0/24' /etc/snort/snort.conf &&
+        sed -i '/ipvar EXTERNAL_NET/c\ipvar EXTERNAL_NET 10.100.10.0/24' /etc/snort/snort.conf &&
+        echo -e 'alert tcp any any -> 192.168.70.0/24 1:65535 (msg: \"Attempted port scan\"; flags:S; detection_filter:track by_src, count 500, seconds 30; sid:1000001; rev:1;)
+        alert tcp any any -> 192.168.70.0/24 1:65535 (msg: \"Attempted XMAS scan (os-probing)\"; flags:FPU; detection_filter:track by_src, count 10, seconds 10; sid:1000002; rev:1;)
+        alert tcp any any -> 192.168.70.0/24 any (msg:\"DDOS attack\"; flow:established,to_server; threshold: type threshold, track by_src, count 100, seconds 3; sid:1000003; rev:1;)
+        alert tcp any any -> 192.168.70.4 3000 (msg:\"SQLi in JSON password field (1=1 or --)\"; flow:to_server,established; content:\"POST /rest/user/\"; nocase; pcre:\"/\\\"password\\\"\\s*:\\s*\\\"[^\\\"]*(?:--|1\s*=\\s*1)[^\\\"]*\\\"/i\"; classtype:web-application-attack; sid:1000061; rev:1;)' >> /etc/snort/rules/local.rules &&
         echo 'Router configured successfully' &&
         tail -f /dev/null
       "
@@ -55,6 +58,7 @@ services:
         ip route add 192.168.70.0/24 via 10.100.10.27 &&
         echo 'External host configured' &&
         apt update && apt install -y firefox-esr &&
+        firefox &&
         tail -f /dev/null
       "
 
