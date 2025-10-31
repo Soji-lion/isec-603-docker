@@ -1,26 +1,32 @@
-1) tools
-    DDOS:
-        DDOR RIPPER (Dripper.py)
-        slowloris
-    port scanning:
-        nmap ipaddress/range (or ip address)
-    os probing:
-        nmap ipaddress -O (or -A)
-    SQL-injection:
-        sqlmap -u "http://192.168.70.4:3000/rest/user/login" --data "email=123@123&&password=12345" --ignore-code=401
-    XSS:
-        https://github.com/epsylon/xsser/issues/67
-        apt install zaproxy (owasp zap) -> does not find XSS, but confirms SQL-injection
-    Data Exfiltration
-        ???
-2) images
-Github max file size limit issue
+Attck-defence simulation in Docker.
+Capable of detecting DDOS attacks, nmap port scanning and os-probing, and sql-injection done against the password field of web-server.
 
-2) rules
-3) slides
+Consists of:
+    - attacker (name: kali) (located on the external network at 10.100.10.3)
+    - vulnerable machine (name: juice_shop) (located at 192.168.70.4 and listening at port 3000)
+    - internal machine (name: internal_host) (unused)
+    - router (name: router) (connects internal and external networks with ip addresses 192.168.70.27 and 10.100.10.27)
 
+To start attack:
+    Open kali container by executing:
+        sudo docker exec -it kali /bin/bash
+    Run one of the corresponding commands:
+        DDOS:
+            slowloris 192.168.70.4 -p 3000
+        port scanning:
+            nmap 192.168.70.4
+        os-probing:
+            nmap 192.168.70.4 -O
+        SQL-injection:
+            sqlmap -u "http://192.168.70.4:3000/rest/user/login" --data "email=123@123&&password=12345" --ignore-code=401
 
-to start snort:
-    snort -Q --daq afpacket -c /etc/snort/snort.conf -i eth0:eth1
-Same thing, but with logging to terminal:
-    snort -Q --daq afpacket -c /etc/snort/snort.conf -i eth0:eth1 -A console
+To start Snort:
+    Open router container by executing:
+        sudo docker exec -it router /bin/bash
+    Inside router run:
+        snort -Q --daq afpacket -c /etc/snort/snort.conf -i eth0:eth1 -A console
+
+All Snort rules created for this simulation are within router at /etc/snort/rules/local.rules
+
+IMPORTANT:
+External host (kali) will not be able to access the internal network unless the snort command mentioned above is running (since snort is set to work in inline mode here)
