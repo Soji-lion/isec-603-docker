@@ -19,6 +19,7 @@ services:
         apt update &&
         apt install -y iptables iproute2 iputils-ping net-tools dnsutils traceroute curl wget snort &&
        echo 1 > /proc/sys/net/ipv4/ip_forward &&
+        iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE &&
         iptables -I FORWARD -j NFQUEUE --queue-num 0 &&
         echo '=== Configuring Snort 2.9 ===' &&
         mkdir -p /var/log/snort &&
