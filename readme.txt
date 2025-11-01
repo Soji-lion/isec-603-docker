@@ -24,7 +24,7 @@ To start Snort:
     Open router container by executing:
         sudo docker exec -it router /bin/bash
     Inside router run:
-        snort -Q --daq afpacket -c /etc/snort/snort.conf -i eth0:eth1 -A console
+        snort -Q --daq nfq --daq-var queue=0 -c /etc/snort/snort.conf -A console -q
 
 All Snort rules created for this simulation are within router at /etc/snort/rules/local.rules
 
