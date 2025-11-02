@@ -59,6 +59,7 @@ services:
         ip route del default &&
         ip route add 192.168.70.27 dev eth0 &&
         ip route add default via 192.168.70.27 &&
+        ip route del 192.168.70.0/24 &&
         echo 'External host configured' &&
         apt update && apt install -y firefox-esr &&
         firefox &&
