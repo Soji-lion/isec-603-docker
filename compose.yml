@@ -25,10 +25,10 @@ services:
         mkdir -p /var/log/snort &&
         sed -i '/ipvar HOME_NET/c\ipvar HOME_NET 192.168.70.0/24' /etc/snort/snort.conf &&
         sed -i '/ipvar EXTERNAL_NET/c\ipvar EXTERNAL_NET 10.100.10.0/24' /etc/snort/snort.conf &&
-        echo -e 'alert tcp any any -> 192.168.70.0/24 1:65535 (msg: \"Attempted port scan\"; flags:S; detection_filter:track by_src, count 500, seconds 30; sid:1000001; rev:1;)' >> /etc/snort/rules/local.rules &&
-        echo -e 'alert tcp any any -> 192.168.70.0/24 1:65535 (msg: \"Attempted XMAS scan (os-probing)\"; flags:FPU; detection_filter:track by_src, count 10, seconds 10; sid:1000002; rev:1;)' >> /etc/snort/rules/local.rules &&
+        echo -e 'alert tcp any any -> 192.168.70.0/24 1:65535 (msg: \"Attempted nmap TCP scan\"; flags:S; detection_filter:track by_src, count 500, seconds 30; sid:1000001; rev:1;)' >> /etc/snort/rules/local.rules &&
+        echo -e 'alert tcp any any -> 192.168.70.0/24 1:65535 (msg: \"Attempted nmap UDP scan\"; threshold:type limit, track by_src, count 50, seconds 60; sid:1000002; rev:1;)' >> /etc/snort/rules/local.rules &&
         echo -e 'alert tcp any any -> 192.168.70.0/24 any (msg:\"DDOS attack\"; flow:established,to_server; threshold: type threshold, track by_src, count 100, seconds 3; sid:1000003; rev:1;)' >> /etc/snort/rules/local.rules &&
-        echo -e 'alert tcp any any -> 192.168.70.4 3000 (msg:\"SQLi in JSON email field (1=1 or --)\"; flow:to_server,established; content:\"POST /rest/user/\"; nocase; pcre:\"/\\\"email\\\"\\s*:\\s*\\\"[^\\\"]*(?:--|1\s*=\\s*1)[^\\\"]*\\\"/i\"; classtype:web-application-attack; sid:1000061; rev:1;)' >> /etc/snort/rules/local.rules &&
+        echo -e 'alert tcp any any -> 192.168.70.4 3000 (msg:\"SQLi in JSON email field (1=1 or --)\"; flow:to_server,established; content:\"POST /rest/user/\"; nocase; pcre:\"/\\\"email\\\"\\s*:\\s*\\\"[^\\\"]*(?:--|1\s*=\\s*1)[^\\\"]*\\\"/i\"; classtype:web-application-attack; sid:100004; rev:1;)' >> /etc/snort/rules/local.rules &&
         echo 'Router configured successfully' &&
         tail -f /dev/null
       "
@@ -44,6 +44,8 @@ services:
     cap_add:
       - ALL
     networks:
+      internal_net:
+        ipv4_address: 192.168.70.6
       external_net:
         ipv4_address: 10.100.10.3
     volumes:
