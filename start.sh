@@ -41,7 +41,7 @@ read -p "Are you sure you want to proceed? (y/n): " confirm
 # Check if user confirmed
 if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
     echo "Proceeding with docker system prune..."
-    sudo docker system prune -af
+    sudo docker system prune -af --volumes
 else
     echo "Operation canceled."
 fi
