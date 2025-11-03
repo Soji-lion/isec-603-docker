@@ -1,4 +1,4 @@
-Attck-defence simulation in Docker.
+Attack-defence simulation in Docker.
 Capable of detecting DDOS attacks, nmap port scanning and os-probing, and sql-injection done against the password field of web-server.
 
 Consists of:
